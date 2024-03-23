@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Image</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        form {
+            text-align: center;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        label {
+            display: inline-block;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button[type="submit"] {
+            display: none;
+        }
+
+        #previewImage {
+            max-width: 100%;
+            margin-top: 20px;
+            display: none;
+        }
+
+        #address {
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Upload Image</h1>
+        <form id="uploadForm" enctype="multipart/form-data">
+            <input type="file" name="file" id="fileInput" accept="image/*">
+            <label for="fileInput" id="chooseBtn">Choose Image</label>
+            <button type="button" id="uploadBtn">Upload</button>
+        </form>
+        <img id="previewImage" src="" alt="Preview Image">
+        <div id="address"></div>
+    </div>
+
+    <script>
+        document.getElementById('fileInput').addEventListener('change', function(event) {
+            var file = event.target.files[0];
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('previewImage').src = e.target.result;
+                document.getElementById('previewImage').style.display = 'block';
+                document.getElementById('uploadBtn').style.display = 'block';
+                document.getElementById('chooseBtn').innerText = 'Change Image';
+            }
+            reader.readAsDataURL(file);
+        });
+
+        document.getElementById('uploadBtn').addEventListener('click', function() {
+            var fileInput = document.getElementById('fileInput');
+            var file = fileInput.files[0];
+            var formData = new FormData();
+            formData.append('file', file);
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/upload', true);
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    var address = xhr.responseText;
+                    document.getElementById('address').innerText = "Address: " + address;
+                } else {
+                    alert('Error occurred while uploading the image.');
+                }
+            };
+            xhr.send(formData);
+        });
+    </script>
+</body>
+</html>
